@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { requireOrg } from "@/lib/org";
+import { canAccessRoute } from "@/lib/permissions";
 import { signOut } from "@/app/(auth)/actions";
 import {
   LayoutDashboard, Package, Boxes, ShoppingCart, Receipt, Users, LogOut,
-  Truck, ShoppingBag, Wallet, ReceiptText, TrendingDown, BarChart3, Settings, Menu,
+  Truck, ShoppingBag, Wallet, ReceiptText, TrendingDown, BarChart3, Settings, Menu, UserPlus,
 } from "lucide-react";
 
 const sidebarNav = [
@@ -19,6 +20,7 @@ const sidebarNav = [
   { href: "/app/contas", label: "Contas", icon: ReceiptText },
   { href: "/app/despesas", label: "Despesas", icon: TrendingDown },
   { href: "/app/relatorios", label: "Relatórios", icon: BarChart3 },
+  { href: "/app/equipe", label: "Equipe", icon: UserPlus },
   { href: "/app/configuracoes", label: "Configurações", icon: Settings },
 ];
 
@@ -31,7 +33,9 @@ const bottomNav = [
 ];
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const { org } = await requireOrg();
+  const { org, role } = await requireOrg();
+  const nav = sidebarNav.filter((i) => canAccessRoute(role, i.href));
+  const bottom = bottomNav.filter((i) => canAccessRoute(role, i.href));
 
   return (
     <div className="min-h-screen md:flex">
@@ -42,7 +46,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <p className="mt-0.5 truncate text-xs text-slate-500">{org?.name}</p>
         </div>
         <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">
-          {sidebarNav.map((item) => (
+          {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -78,12 +82,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <main className="flex-1 p-4 pb-24 md:p-8 md:pb-8">{children}</main>
 
         {/* Bottom nav (mobile) */}
-        <nav className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-5 border-t border-slate-200 bg-white md:hidden">
-          {bottomNav.map((item) => (
+        <nav className="fixed inset-x-0 bottom-0 z-10 flex border-t border-slate-200 bg-white md:hidden">
+          {bottom.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="flex flex-col items-center gap-1 py-2 text-[11px] font-medium text-slate-500 hover:text-brand-700"
+              className="flex flex-1 flex-col items-center gap-1 py-2 text-[11px] font-medium text-slate-500 hover:text-brand-700"
             >
               <item.icon className="h-5 w-5" />
               {item.label}

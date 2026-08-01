@@ -1,11 +1,13 @@
 import { ProductForm } from "../product-form";
 import { createProduct } from "../actions";
+import { requirePermission } from "@/lib/org";
 
-export default function NovoProdutoPage({
+export default async function NovoProdutoPage({
   searchParams,
 }: {
   searchParams: { onboarding?: string };
 }) {
+  await requirePermission("produtos:editar");
   const onboarding = searchParams.onboarding === "1";
   return (
     <div className="space-y-5">

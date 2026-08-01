@@ -1,12 +1,12 @@
 "use server";
 
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { revalidatePath } from "next/cache";
 
 export type SupplierState = { error?: string; ok?: boolean };
 
 export async function createSupplier(_: SupplierState, formData: FormData): Promise<SupplierState> {
-  const { supabase, orgId, user } = await requireOrg();
+  const { supabase, orgId, user } = await requirePermission("fornecedores");
   const name = String(formData.get("name") ?? "").trim();
   if (!name) return { error: "Informe o nome do fornecedor." };
 

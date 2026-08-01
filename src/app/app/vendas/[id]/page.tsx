@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
+import { can } from "@/lib/permissions";
 import { brl, dateTime, qty, PAYMENT_LABELS } from "@/lib/format";
 import { Badge, Button, Card } from "@/components/ui";
 import { cancelSale } from "../actions";
@@ -13,7 +14,7 @@ export default async function VendaPage({
   params: { id: string };
   searchParams: { nova?: string };
 }) {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId, role } = await requirePermission("vendas");
 
   const { data: sale } = await supabase
     .from("sales")
@@ -77,7 +78,7 @@ export default async function VendaPage({
         </div>
       </Card>
 
-      {sale.status === "concluida" && (
+      {sale.status === "concluida" && can(role, "vendas:cancelar") && (
         <form action={cancelSale}>
           <input type="hidden" name="sale_id" value={sale.id} />
           <Button variant="danger" type="submit">

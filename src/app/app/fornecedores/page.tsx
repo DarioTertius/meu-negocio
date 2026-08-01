@@ -1,11 +1,11 @@
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { Card, EmptyState } from "@/components/ui";
 import { SupplierForm } from "./supplier-form";
 
 export const dynamic = "force-dynamic";
 
 export default async function FornecedoresPage() {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("fornecedores");
   const { data: suppliers } = await supabase
     .from("suppliers")
     .select("id, name, phone, email, document")

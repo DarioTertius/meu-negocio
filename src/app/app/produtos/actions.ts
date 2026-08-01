@@ -1,6 +1,6 @@
 "use server";
 
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -24,7 +24,7 @@ function readProduct(formData: FormData) {
 }
 
 export async function createProduct(_: ProductState, formData: FormData): Promise<ProductState> {
-  const { supabase, orgId, user } = await requireOrg();
+  const { supabase, orgId, user } = await requirePermission("produtos:editar");
   const p = readProduct(formData);
   const initialStock = parseMoney(formData.get("stock"));
   if (!p.name) return { error: "Informe o nome do produto." };
@@ -59,7 +59,7 @@ export async function createProduct(_: ProductState, formData: FormData): Promis
 }
 
 export async function updateProduct(_: ProductState, formData: FormData): Promise<ProductState> {
-  const { supabase, orgId, user } = await requireOrg();
+  const { supabase, orgId, user } = await requirePermission("produtos:editar");
   const id = String(formData.get("id") ?? "");
   const p = readProduct(formData);
   if (!id) return { error: "Produto inválido." };
@@ -82,7 +82,7 @@ export async function updateProduct(_: ProductState, formData: FormData): Promis
 }
 
 export async function toggleProductActive(formData: FormData) {
-  const { supabase, orgId, user } = await requireOrg();
+  const { supabase, orgId, user } = await requirePermission("produtos:editar");
   const id = String(formData.get("id") ?? "");
   const active = formData.get("active") === "true";
 

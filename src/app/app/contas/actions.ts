@@ -1,6 +1,6 @@
 "use server";
 
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { revalidatePath } from "next/cache";
 
 export type AccountState = { error?: string; ok?: boolean };
@@ -11,7 +11,7 @@ const parseMoney = (v: FormDataEntryValue | null) => {
 };
 
 export async function createAccount(_: AccountState, formData: FormData): Promise<AccountState> {
-  const { supabase, orgId, user } = await requireOrg();
+  const { supabase, orgId, user } = await requirePermission("contas");
   const type = String(formData.get("type") ?? "");
   const description = String(formData.get("description") ?? "").trim();
   const amount = parseMoney(formData.get("amount"));
@@ -45,7 +45,7 @@ export async function createAccount(_: AccountState, formData: FormData): Promis
 }
 
 export async function settleAccount(formData: FormData) {
-  const { supabase, orgId, user } = await requireOrg();
+  const { supabase, orgId, user } = await requirePermission("contas");
   const type = String(formData.get("type") ?? "");
   const id = String(formData.get("id") ?? "");
   if ((type !== "pagar" && type !== "receber") || !id) return;

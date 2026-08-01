@@ -1,10 +1,10 @@
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { Pdv } from "./pdv";
 
 export const dynamic = "force-dynamic";
 
 export default async function PdvPage() {
-  const { supabase, orgId, org } = await requireOrg();
+  const { supabase, orgId, org } = await requirePermission("pdv");
 
   const [{ data: products }, { data: customers }] = await Promise.all([
     supabase

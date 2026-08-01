@@ -1,12 +1,12 @@
 "use server";
 
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { revalidatePath } from "next/cache";
 
 export type CustomerState = { error?: string; ok?: boolean };
 
 export async function createCustomer(_: CustomerState, formData: FormData): Promise<CustomerState> {
-  const { supabase, orgId, user } = await requireOrg();
+  const { supabase, orgId, user } = await requirePermission("clientes");
   const name = String(formData.get("name") ?? "").trim();
   if (!name) return { error: "Informe o nome do cliente." };
 

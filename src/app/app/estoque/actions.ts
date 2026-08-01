@@ -1,12 +1,12 @@
 "use server";
 
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { revalidatePath } from "next/cache";
 
 export type StockState = { error?: string; ok?: boolean };
 
 export async function registerMovement(_: StockState, formData: FormData): Promise<StockState> {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("estoque");
   const productId = String(formData.get("product_id") ?? "");
   const kind = String(formData.get("kind") ?? "");
   const reason = String(formData.get("reason") ?? "");

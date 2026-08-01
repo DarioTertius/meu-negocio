@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { requireOrg } from "@/lib/org";
+import { canAccessRoute } from "@/lib/permissions";
 import { Card } from "@/components/ui";
 import {
-  Boxes, Truck, ShoppingBag, Wallet, ReceiptText, TrendingDown, BarChart3, Settings, Users,
+  Boxes, Truck, ShoppingBag, Wallet, ReceiptText, TrendingDown, BarChart3, Settings, Users, UserPlus,
 } from "lucide-react";
 
 const links = [
@@ -13,15 +15,20 @@ const links = [
   { href: "/app/contas", label: "Contas", desc: "A pagar e a receber", icon: ReceiptText },
   { href: "/app/despesas", label: "Despesas", desc: "Gastos do dia a dia", icon: TrendingDown },
   { href: "/app/relatorios", label: "Relatórios", desc: "Vendas, produtos e resultado", icon: BarChart3 },
+  { href: "/app/equipe", label: "Equipe", desc: "Convide gerente, caixa, estoquista", icon: UserPlus },
   { href: "/app/configuracoes", label: "Configurações", desc: "Empresa e plano", icon: Settings },
 ];
 
-export default function MaisPage() {
+export const dynamic = "force-dynamic";
+
+export default async function MaisPage() {
+  const { role } = await requireOrg();
+  const visible = links.filter((l) => canAccessRoute(role, l.href));
   return (
     <div className="space-y-5">
       <h1 className="text-2xl font-bold">Mais</h1>
       <div className="grid gap-3 sm:grid-cols-2">
-        {links.map((l) => (
+        {visible.map((l) => (
           <Link key={l.href} href={l.href}>
             <Card className="flex items-center gap-4 transition hover:border-brand-400">
               <l.icon className="h-5 w-5 shrink-0 text-brand-700" />

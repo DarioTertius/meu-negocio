@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { brl, dateTime, PAYMENT_LABELS } from "@/lib/format";
 import { Badge, Card, EmptyState } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
 export default async function VendasPage() {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("vendas");
 
   const { data: sales } = await supabase
     .from("sales")

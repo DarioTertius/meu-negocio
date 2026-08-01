@@ -1,6 +1,6 @@
 "use server";
 
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { revalidatePath } from "next/cache";
 
 export type PurchaseResult = { error?: string; ok?: boolean };
@@ -14,7 +14,7 @@ export async function finalizePurchase(input: {
   generate_payable: boolean;
   due_date: string | null;
 }): Promise<PurchaseResult> {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("compras");
 
   if (!input.items?.length) return { error: "Adicione pelo menos um item." };
   for (const item of input.items) {

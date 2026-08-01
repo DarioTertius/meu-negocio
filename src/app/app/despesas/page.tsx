@@ -1,4 +1,4 @@
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { brl } from "@/lib/format";
 import { Card, EmptyState } from "@/components/ui";
 import { ExpenseForm } from "./expense-form";
@@ -6,7 +6,7 @@ import { ExpenseForm } from "./expense-form";
 export const dynamic = "force-dynamic";
 
 export default async function DespesasPage() {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("despesas");
   const { data: expenses } = await supabase
     .from("expenses")
     .select("id, description, category, amount, expense_date")

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
+import { can } from "@/lib/permissions";
 import { brl, qty } from "@/lib/format";
 import { Badge, Button, Card, EmptyState, Input } from "@/components/ui";
 import { toggleProductActive } from "./actions";
@@ -14,7 +15,8 @@ export default async function ProdutosPage({
 }: {
   searchParams: { q?: string; pagina?: string };
 }) {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId, role } = await requirePermission("produtos:ver");
+  const canEdit = can(role, "produtos:editar");
   const q = (searchParams.q ?? "").trim();
   const page = Math.max(1, Number(searchParams.pagina ?? 1) || 1);
   const from = (page - 1) * PAGE_SIZE;
@@ -34,9 +36,11 @@ export default async function ProdutosPage({
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Produtos</h1>
-        <Link href="/app/produtos/novo">
-          <Button><Plus className="h-4 w-4" /> Novo produto</Button>
-        </Link>
+        {canEdit && (
+          <Link href="/app/produtos/novo">
+            <Button><Plus className="h-4 w-4" /> Novo produto</Button>
+          </Link>
+        )}
       </div>
 
       <form className="max-w-sm">
@@ -82,18 +86,22 @@ export default async function ProdutosPage({
                       {p.active ? <Badge tone="green">Ativo</Badge> : <Badge>Inativo</Badge>}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-2">
-                        <Link href={`/app/produtos/${p.id}`} className="text-brand-700 hover:underline">
-                          Editar
-                        </Link>
-                        <form action={toggleProductActive}>
-                          <input type="hidden" name="id" value={p.id} />
-                          <input type="hidden" name="active" value={String(p.active)} />
-                          <button className="text-slate-500 hover:underline">
-                            {p.active ? "Inativar" : "Ativar"}
-                          </button>
-                        </form>
-                      </div>
+                      {canEdit ? (
+                        <div className="flex justify-end gap-2">
+                          <Link href={`/app/produtos/${p.id}`} className="text-brand-700 hover:underline">
+                            Editar
+                          </Link>
+                          <form action={toggleProductActive}>
+                            <input type="hidden" name="id" value={p.id} />
+                            <input type="hidden" name="active" value={String(p.active)} />
+                            <button className="text-slate-500 hover:underline">
+                              {p.active ? "Inativar" : "Ativar"}
+                            </button>
+                          </form>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-400">Consulta</span>
+                      )}
                     </td>
                   </tr>
                 );

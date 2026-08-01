@@ -1,6 +1,6 @@
 "use server";
 
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { revalidatePath } from "next/cache";
 
 export type CashState = { error?: string; ok?: boolean };
@@ -11,7 +11,7 @@ const parseMoney = (v: FormDataEntryValue | null) => {
 };
 
 export async function openRegister(_: CashState, formData: FormData): Promise<CashState> {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("caixa");
   const opening = parseMoney(formData.get("opening_amount"));
   if (!Number.isFinite(opening) || opening < 0) return { error: "Valor de abertura inválido." };
 
@@ -22,7 +22,7 @@ export async function openRegister(_: CashState, formData: FormData): Promise<Ca
 }
 
 export async function addCashMovement(_: CashState, formData: FormData): Promise<CashState> {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("caixa");
   const kind = String(formData.get("kind") ?? "");
   const reason = String(formData.get("reason") ?? "").trim();
   const amount = parseMoney(formData.get("amount"));
@@ -40,7 +40,7 @@ export async function addCashMovement(_: CashState, formData: FormData): Promise
 }
 
 export async function closeRegister(_: CashState, formData: FormData): Promise<CashState> {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("caixa");
   const informed = parseMoney(formData.get("informed_amount"));
   if (!Number.isFinite(informed) || informed < 0) return { error: "Valor contado inválido." };
 

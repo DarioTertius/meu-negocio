@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { ProductForm } from "../product-form";
 import { updateProduct } from "../actions";
 import { brl, qty } from "@/lib/format";
@@ -7,7 +7,7 @@ import { brl, qty } from "@/lib/format";
 export const dynamic = "force-dynamic";
 
 export default async function EditarProdutoPage({ params }: { params: { id: string } }) {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("produtos:editar");
   const { data: product } = await supabase
     .from("products")
     .select("*")

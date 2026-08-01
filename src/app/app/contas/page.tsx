@@ -1,4 +1,4 @@
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { brl } from "@/lib/format";
 import { Badge, Button, Card, EmptyState } from "@/components/ui";
 import { AccountForm } from "./account-form";
@@ -68,7 +68,7 @@ function AccountList({ title, accounts, type }: { title: string; accounts: Accou
 }
 
 export default async function ContasPage() {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("contas");
 
   const [{ data: payable }, { data: receivable }] = await Promise.all([
     supabase

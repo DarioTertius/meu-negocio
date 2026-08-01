@@ -1,4 +1,4 @@
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { Badge, Card } from "@/components/ui";
 import { OrgForm } from "./org-form";
 import { brl } from "@/lib/format";
@@ -6,7 +6,7 @@ import { brl } from "@/lib/format";
 export const dynamic = "force-dynamic";
 
 export default async function ConfiguracoesPage() {
-  const { supabase, orgId, org, role } = await requireOrg();
+  const { supabase, orgId, org, role } = await requirePermission("configuracoes");
 
   const { data: sub } = await supabase
     .from("subscriptions")

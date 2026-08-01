@@ -1,4 +1,4 @@
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { brl, qty, PAYMENT_LABELS } from "@/lib/format";
 import { Button, Card, EmptyState, Input, Label } from "@/components/ui";
 
@@ -18,7 +18,7 @@ export default async function RelatoriosPage({
 }: {
   searchParams: { inicio?: string; fim?: string };
 }) {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("relatorios");
   const defaults = monthRange();
   const inicio = searchParams.inicio || defaults.inicio;
   const fim = searchParams.fim || defaults.fim;

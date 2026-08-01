@@ -1,4 +1,4 @@
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { dateTime, qty, REASON_LABELS } from "@/lib/format";
 import { Badge, Card, EmptyState } from "@/components/ui";
 import { MovementForm } from "./movement-form";
@@ -6,7 +6,7 @@ import { MovementForm } from "./movement-form";
 export const dynamic = "force-dynamic";
 
 export default async function EstoquePage() {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("estoque");
 
   const [{ data: products }, { data: movements }] = await Promise.all([
     supabase

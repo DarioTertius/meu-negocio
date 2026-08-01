@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { can, type Permission } from "@/lib/permissions";
 
 /** Retorna usuário + organização ativa. Redireciona se faltar auth/onboarding. */
 export async function requireOrg() {
@@ -23,4 +24,11 @@ export async function requireOrg() {
     : membership.organizations;
 
   return { supabase, user, orgId: membership.organization_id as string, role: membership.role as string, org };
+}
+
+/** Igual a requireOrg, mas exige uma permissão do perfil. Sem permissão → volta ao início. */
+export async function requirePermission(perm: Permission) {
+  const ctx = await requireOrg();
+  if (!can(ctx.role, perm)) redirect("/app");
+  return ctx;
 }

@@ -1,10 +1,10 @@
 "use server";
 
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { revalidatePath } from "next/cache";
 
 export async function cancelSale(formData: FormData) {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("vendas:cancelar");
   const saleId = String(formData.get("sale_id") ?? "");
   if (!saleId) return;
 

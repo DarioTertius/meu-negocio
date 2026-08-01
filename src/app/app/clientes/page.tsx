@@ -1,4 +1,4 @@
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { brl } from "@/lib/format";
 import { Card, EmptyState } from "@/components/ui";
 import { CustomerForm } from "./customer-form";
@@ -7,7 +7,7 @@ import { MessageCircle } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 export default async function ClientesPage() {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("clientes");
 
   const [{ data: customers }, { data: sales }] = await Promise.all([
     supabase

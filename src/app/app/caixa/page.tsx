@@ -1,4 +1,4 @@
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { brl, dateTime } from "@/lib/format";
 import { Badge, Card, EmptyState } from "@/components/ui";
 import { OpenRegisterForm, CashMovementForm, CloseRegisterForm } from "./cash-forms";
@@ -6,7 +6,7 @@ import { OpenRegisterForm, CashMovementForm, CloseRegisterForm } from "./cash-fo
 export const dynamic = "force-dynamic";
 
 export default async function CaixaPage() {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("caixa");
 
   const { data: open } = await supabase
     .from("cash_registers")

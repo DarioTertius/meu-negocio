@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { brl, dateTime, PAYMENT_LABELS } from "@/lib/format";
 import { Button, Card, EmptyState } from "@/components/ui";
 import { Plus } from "lucide-react";
@@ -7,7 +7,7 @@ import { Plus } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 export default async function ComprasPage() {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("compras");
   const { data: purchases } = await supabase
     .from("purchases")
     .select("id, total, payment_method, created_at, suppliers(name), purchase_items(id)")

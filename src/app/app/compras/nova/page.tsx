@@ -1,10 +1,10 @@
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { PurchaseForm } from "./purchase-form";
 
 export const dynamic = "force-dynamic";
 
 export default async function NovaCompraPage() {
-  const { supabase, orgId } = await requireOrg();
+  const { supabase, orgId } = await requirePermission("compras");
   const [{ data: products }, { data: suppliers }] = await Promise.all([
     supabase
       .from("products")

@@ -1,12 +1,12 @@
 "use server";
 
-import { requireOrg } from "@/lib/org";
+import { requirePermission } from "@/lib/org";
 import { revalidatePath } from "next/cache";
 
 export type ExpenseState = { error?: string; ok?: boolean };
 
 export async function createExpense(_: ExpenseState, formData: FormData): Promise<ExpenseState> {
-  const { supabase, orgId, user } = await requireOrg();
+  const { supabase, orgId, user } = await requirePermission("despesas");
   const description = String(formData.get("description") ?? "").trim();
   const amount = Number(String(formData.get("amount") ?? "").replace(",", "."));
   const expenseDate = String(formData.get("expense_date") ?? "") || new Date().toISOString().slice(0, 10);
