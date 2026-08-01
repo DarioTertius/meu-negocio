@@ -1,0 +1,15 @@
+-- ============================================================================
+-- SEED DE DEMONSTRAÇÃO (opcional)
+-- Execute logado no SQL Editor do Supabase APÓS criar sua conta e empresa.
+-- Substitua :org pelo id da sua organização (select id from organizations;)
+-- Todos os registros vêm marcados com "[DEMO]".
+-- ============================================================================
+-- Exemplo:
+-- insert into categories (organization_id, name) values ('SEU-ORG-ID', '[DEMO] Bebidas');
+-- insert into products (organization_id, name, sku, unit, cost, price, stock, min_stock)
+-- values
+--  ('SEU-ORG-ID', '[DEMO] Água mineral 500ml', 'AGUA500', 'un', 1.20, 3.00, 48, 12),
+--  ('SEU-ORG-ID', '[DEMO] Refrigerante lata',  'REFRI350','un', 2.80, 6.00, 30, 10),
+--  ('SEU-ORG-ID', '[DEMO] Salgado assado',     'SALG01',  'un', 3.50, 8.00, 15, 5);
+-- insert into customers (organization_id, name, phone)
+-- values ('SEU-ORG-ID', '[DEMO] Cliente Balcão', '(85) 99999-0000');
