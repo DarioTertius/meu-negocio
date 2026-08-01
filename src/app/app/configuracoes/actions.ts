@@ -29,3 +29,28 @@ export async function updateOrganization(_: OrgState, formData: FormData): Promi
   revalidatePath("/app", "layout");
   return { ok: true };
 }
+
+export async function saveBranding(input: {
+  brand_color: string | null;
+  logo_url: string | null;
+}): Promise<OrgState> {
+  const { supabase, orgId, user, role } = await requireOrg();
+  if (role !== "owner" && role !== "admin")
+    return { error: "Apenas o dono ou administrador pode alterar a aparência." };
+
+  const color =
+    input.brand_color && /^#[0-9a-fA-F]{6}$/.test(input.brand_color) ? input.brand_color : null;
+
+  const { error } = await supabase
+    .from("organizations")
+    .update({ brand_color: color, logo_url: input.logo_url })
+    .eq("id", orgId);
+  if (error) return { error: "Não foi possível salvar. " + error.message };
+
+  await supabase.from("audit_logs").insert({
+    organization_id: orgId, user_id: user.id, action: "update_branding",
+    entity: "organization", entity_id: orgId,
+  });
+  revalidatePath("/app", "layout");
+  return { ok: true };
+}

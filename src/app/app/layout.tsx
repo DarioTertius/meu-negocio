@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireOrg } from "@/lib/org";
 import { canAccessRoute } from "@/lib/permissions";
+import { paletteCss, sanitizeHex } from "@/lib/branding";
 import { signOut } from "@/app/(auth)/actions";
 import {
   LayoutDashboard, Package, Boxes, ShoppingCart, Receipt, Users, LogOut,
@@ -36,14 +37,22 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { org, role } = await requireOrg();
   const nav = sidebarNav.filter((i) => canAccessRoute(role, i.href));
   const bottom = bottomNav.filter((i) => canAccessRoute(role, i.href));
+  const brandCss = paletteCss(sanitizeHex(org?.brand_color));
+  const logo = org?.logo_url ?? null;
 
   return (
     <div className="min-h-screen md:flex">
+      <style>{brandCss}</style>
       {/* Sidebar (desktop) */}
       <aside className="hidden w-60 shrink-0 flex-col border-r border-slate-200 bg-white md:flex">
         <div className="border-b border-slate-100 px-5 py-4">
-          <p className="text-sm font-bold text-brand-800">Meu Negócio</p>
-          <p className="mt-0.5 truncate text-xs text-slate-500">{org?.name}</p>
+          {logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logo} alt={org?.name ?? "Logo"} className="h-9 w-auto max-w-[170px] object-contain" />
+          ) : (
+            <p className="text-sm font-bold text-brand-800">Meu Negócio</p>
+          )}
+          <p className="mt-1 truncate text-xs text-slate-500">{org?.name}</p>
         </div>
         <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">
           {nav.map((item) => (
@@ -68,8 +77,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       {/* Topo (mobile) */}
       <div className="flex flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 md:hidden">
-          <div>
-            <p className="text-sm font-bold text-brand-800">Meu Negócio</p>
+          <div className="flex items-center gap-3">
+            {logo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logo} alt={org?.name ?? "Logo"} className="h-8 w-auto max-w-[130px] object-contain" />
+            ) : (
+              <p className="text-sm font-bold text-brand-800">Meu Negócio</p>
+            )}
             <p className="truncate text-xs text-slate-500">{org?.name}</p>
           </div>
           <form action={signOut}>

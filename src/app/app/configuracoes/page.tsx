@@ -1,6 +1,7 @@
 import { requirePermission } from "@/lib/org";
 import { Badge, Card } from "@/components/ui";
 import { OrgForm } from "./org-form";
+import { BrandingForm } from "./branding-form";
 import { brl } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +31,12 @@ export default async function ConfiguracoesPage() {
           business_type: org?.business_type ?? null,
           tracks_stock: Boolean(org?.tracks_stock),
         }}
+      />
+
+      <BrandingForm
+        orgId={orgId}
+        currentColor={org?.brand_color ?? null}
+        currentLogo={org?.logo_url ?? null}
       />
 
       <Card className="max-w-xl">

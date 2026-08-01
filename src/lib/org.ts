@@ -12,7 +12,7 @@ export async function requireOrg() {
 
   const { data: membership } = await supabase
     .from("organization_members")
-    .select("organization_id, role, organizations(id, name, business_type, tracks_stock)")
+    .select("organization_id, role, organizations(id, name, business_type, tracks_stock, brand_color, logo_url)")
     .eq("user_id", user.id)
     .limit(1)
     .maybeSingle();
