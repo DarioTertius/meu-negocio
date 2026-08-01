@@ -4,14 +4,7 @@ import { useRef } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { Button, Card, Input, Label, Select } from "@/components/ui";
 import { inviteMember, removeMember, changeRole, type TeamState } from "./actions";
-
-export const ROLE_LABELS: Record<string, string> = {
-  owner: "Dono",
-  admin: "Administrador",
-  manager: "Gerente",
-  seller: "Vendedor / Caixa",
-  operator: "Estoquista / Operador",
-};
+import { ROLE_LABELS } from "@/lib/permissions";
 
 function Submit({ label }: { label: string }) {
   const { pending } = useFormStatus();

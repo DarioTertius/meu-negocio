@@ -1,7 +1,8 @@
 import { requirePermission } from "@/lib/org";
 import { dateTime } from "@/lib/format";
 import { Badge, Card, EmptyState } from "@/components/ui";
-import { InviteForm, MemberActions, ROLE_LABELS } from "./team-forms";
+import { InviteForm, MemberActions } from "./team-forms";
+import { ROLE_LABELS } from "@/lib/permissions";
 import { revokeInvite } from "./actions";
 
 export const dynamic = "force-dynamic";

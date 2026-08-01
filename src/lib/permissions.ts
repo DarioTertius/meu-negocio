@@ -55,3 +55,11 @@ export function canAccessRoute(role: string, href: string): boolean {
   const perm = ROUTE_PERMISSIONS[href];
   return perm === null || perm === undefined ? true : can(role, perm);
 }
+
+export const ROLE_LABELS: Record<string, string> = {
+  owner: "Dono",
+  admin: "Administrador",
+  manager: "Gerente",
+  seller: "Vendedor / Caixa",
+  operator: "Estoquista / Operador",
+};
