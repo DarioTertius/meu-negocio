@@ -5,7 +5,7 @@ import { paletteCss, sanitizeHex } from "@/lib/branding";
 import { signOut } from "@/app/(auth)/actions";
 import {
   LayoutDashboard, Package, Boxes, ShoppingCart, Receipt, Users, LogOut,
-  Truck, ShoppingBag, Wallet, ReceiptText, TrendingDown, BarChart3, Settings, Menu, UserPlus, ClipboardList,
+  Truck, ShoppingBag, Wallet, ReceiptText, TrendingDown, BarChart3, Settings, Menu, UserPlus, ClipboardList, Bell,
 } from "lucide-react";
 
 const sidebarNav = [
@@ -35,7 +35,12 @@ const bottomNav = [
 ];
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const { org, role } = await requireOrg();
+  const { org, role, supabase, orgId } = await requireOrg();
+  const { count: unread } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("organization_id", orgId)
+    .eq("read", false);
   const nav = sidebarNav.filter((i) => canAccessRoute(role, i.href));
   const bottom = bottomNav.filter((i) => canAccessRoute(role, i.href));
   const brandCss = paletteCss(sanitizeHex(org?.brand_color));
@@ -67,6 +72,20 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             </Link>
           ))}
         </nav>
+        <div className="border-t border-slate-100 p-3">
+          <Link
+            href="/app/notificacoes"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+          >
+            <Bell className="h-4 w-4" />
+            Notificações
+            {(unread ?? 0) > 0 && (
+              <span className="ml-auto rounded-full bg-red-500 px-2 py-0.5 text-xs font-bold text-white">
+                {unread}
+              </span>
+            )}
+          </Link>
+        </div>
         <form action={signOut} className="border-t border-slate-100 p-3">
           <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900">
             <LogOut className="h-4 w-4" />
@@ -87,11 +106,21 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             )}
             <p className="truncate text-xs text-slate-500">{org?.name}</p>
           </div>
-          <form action={signOut}>
-            <button className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Sair">
-              <LogOut className="h-5 w-5" />
-            </button>
-          </form>
+          <div className="flex items-center gap-1">
+            <Link href="/app/notificacoes" className="relative rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Notificações">
+              <Bell className="h-5 w-5" />
+              {(unread ?? 0) > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                  {unread}
+                </span>
+              )}
+            </Link>
+            <form action={signOut}>
+              <button className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Sair">
+                <LogOut className="h-5 w-5" />
+              </button>
+            </form>
+          </div>
         </header>
 
         <main className="flex-1 p-4 pb-24 md:p-8 md:pb-8">{children}</main>

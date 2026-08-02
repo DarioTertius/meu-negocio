@@ -36,6 +36,7 @@ export function can(role: string, perm: Permission): boolean {
 export const ROUTE_PERMISSIONS: Record<string, Permission | null> = {
   "/app": null,
   "/app/mais": null,
+  "/app/notificacoes": null,
   "/app/pdv": "pdv",
   "/app/comandas": "pdv",
   "/app/produtos": "produtos:ver",

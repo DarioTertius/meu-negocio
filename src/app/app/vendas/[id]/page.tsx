@@ -3,6 +3,8 @@ import { requirePermission } from "@/lib/org";
 import { can } from "@/lib/permissions";
 import { brl, dateTime, qty, PAYMENT_LABELS } from "@/lib/format";
 import { Badge, Button, Card } from "@/components/ui";
+import Link from "next/link";
+import { Receipt } from "lucide-react";
 import { cancelSale } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -77,6 +79,12 @@ export default async function VendaPage({
           </div>
         </div>
       </Card>
+
+      <Link href={`/recibo/${sale.id}`}>
+        <Button variant="outline">
+          <Receipt className="h-4 w-4" /> Comprovante para o cliente
+        </Button>
+      </Link>
 
       {sale.status === "concluida" && can(role, "vendas:cancelar") && (
         <form action={cancelSale}>

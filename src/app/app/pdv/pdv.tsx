@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card, Input, Select, EmptyState } from "@/components/ui";
 import { brl, qty, PAYMENT_LABELS } from "@/lib/format";
@@ -92,21 +92,92 @@ export function Pdv({
   );
   const total = subtotal - discountValue;
 
+  // ---- fila offline: vendas guardadas no aparelho quando a internet cai ----
+  type PendingSale = {
+    items: { product_id: string; quantity: number; unit_price: number }[];
+    customer_id: string | null;
+    payment_method: string;
+    discount: number;
+    saved_at: string;
+  };
+  const QUEUE_KEY = "mn_vendas_pendentes";
+  const [pendingCount, setPendingCount] = useState(0);
+  const [syncMsg, setSyncMsg] = useState<string | null>(null);
+
+  function readQueue(): PendingSale[] {
+    try {
+      return JSON.parse(localStorage.getItem(QUEUE_KEY) ?? "[]");
+    } catch {
+      return [];
+    }
+  }
+  function writeQueue(q: PendingSale[]) {
+    localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
+    setPendingCount(q.length);
+  }
+
+  async function resendQueue() {
+    const queue = readQueue();
+    if (queue.length === 0) return;
+    setSyncMsg("Reenviando vendas pendentes…");
+    const failed: PendingSale[] = [];
+    let sent = 0;
+    for (const sale of queue) {
+      try {
+        const r = await finalizeSale(sale);
+        if (r.error) {
+          // erro de negócio (ex.: estoque) — descarta da fila e avisa
+          setSyncMsg(`Uma venda pendente foi rejeitada: ${r.error}`);
+        } else {
+          sent++;
+        }
+      } catch {
+        failed.push(sale); // ainda sem internet
+      }
+    }
+    writeQueue(failed);
+    if (sent > 0) {
+      setSyncMsg(`${sent} venda(s) pendente(s) enviada(s) com sucesso.`);
+      router.refresh();
+    } else if (failed.length > 0) {
+      setSyncMsg("Ainda sem conexão — as vendas continuam guardadas.");
+    }
+  }
+
+  useEffect(() => {
+    setPendingCount(readQueue().length);
+    const onOnline = () => resendQueue();
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function submit() {
     setError(null);
+    const payload = {
+      items: cart.map((i) => ({
+        product_id: i.product.id,
+        quantity: i.quantity,
+        unit_price: i.product.price,
+      })),
+      customer_id: customerId || null,
+      payment_method: paymentMethod,
+      discount: discountValue,
+    };
     startTransition(async () => {
-      const result = await finalizeSale({
-        items: cart.map((i) => ({
-          product_id: i.product.id,
-          quantity: i.quantity,
-          unit_price: i.product.price,
-        })),
-        customer_id: customerId || null,
-        payment_method: paymentMethod,
-        discount: discountValue,
-      });
-      if (result.error) setError(result.error);
-      else router.push(`/app/vendas/${result.saleId}?nova=1`);
+      try {
+        const result = await finalizeSale(payload);
+        if (result.error) setError(result.error);
+        else router.push(`/app/vendas/${result.saleId}?nova=1`);
+      } catch {
+        // sem internet: guarda no aparelho e libera o balcão
+        writeQueue([...readQueue(), { ...payload, saved_at: new Date().toISOString() }]);
+        setCart([]);
+        setDiscount("");
+        setSyncMsg(
+          "Sem conexão agora. A venda ficou guardada neste aparelho e será enviada assim que a internet voltar."
+        );
+      }
     });
   }
 
@@ -114,6 +185,19 @@ export function Pdv({
     <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">PDV</h1>
+        {(pendingCount > 0 || syncMsg) && (
+          <div className="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            {syncMsg ?? ""}
+            {pendingCount > 0 && (
+              <span>
+                {" "}<strong>{pendingCount}</strong> venda(s) aguardando conexão.{" "}
+                <button onClick={resendQueue} className="font-medium underline">
+                  Tentar enviar agora
+                </button>
+              </span>
+            )}
+          </div>
+        )}
         <div className="flex gap-2">
           <Input
             autoFocus
