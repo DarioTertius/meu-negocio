@@ -1,6 +1,7 @@
 import { requirePermission } from "@/lib/org";
 import { dateTime, qty, REASON_LABELS } from "@/lib/format";
-import { Badge, Card, EmptyState } from "@/components/ui";
+import { Badge, Button, Card, EmptyState } from "@/components/ui";
+import Link from "next/link";
 import { MovementForm } from "./movement-form";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +26,12 @@ export default async function EstoquePage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Estoque</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold">Estoque</h1>
+        <Link href="/app/estoque/conferencia">
+          <Button variant="outline">Conferência de estoque</Button>
+        </Link>
+      </div>
       <MovementForm products={products ?? []} />
 
       <section>

@@ -97,3 +97,27 @@ export async function toggleProductActive(formData: FormData) {
   });
   revalidatePath("/app/produtos");
 }
+
+export type ImportItem = {
+  name: string; sku: string | null; barcode: string | null; unit: string;
+  cost: number; price: number; stock: number; min_stock: number;
+};
+
+export async function importProducts(
+  items: ImportItem[]
+): Promise<{ error?: string; inserted?: number; skipped?: number }> {
+  const { supabase, orgId } = await requirePermission("produtos:editar");
+  if (!items?.length) return { error: "Nenhum produto válido na planilha." };
+  if (items.length > 500) return { error: "Máximo de 500 produtos por importação." };
+
+  const { data, error } = await supabase.rpc("import_products", {
+    p_org: orgId,
+    p_items: items,
+  });
+  if (error) return { error: error.message };
+
+  revalidatePath("/app/produtos");
+  revalidatePath("/app/estoque");
+  const r = data as { inserted: number; skipped: number };
+  return { inserted: r.inserted, skipped: r.skipped };
+}

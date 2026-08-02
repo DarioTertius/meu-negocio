@@ -37,9 +37,14 @@ export default async function ProdutosPage({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Produtos</h1>
         {canEdit && (
-          <Link href="/app/produtos/novo">
-            <Button><Plus className="h-4 w-4" /> Novo produto</Button>
-          </Link>
+          <div className="flex gap-2">
+            <Link href="/app/produtos/importar">
+              <Button variant="outline">Importar planilha</Button>
+            </Link>
+            <Link href="/app/produtos/novo">
+              <Button><Plus className="h-4 w-4" /> Novo produto</Button>
+            </Link>
+          </div>
         )}
       </div>
 

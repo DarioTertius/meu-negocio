@@ -33,3 +33,26 @@ export async function registerMovement(_: StockState, formData: FormData): Promi
   revalidatePath("/app/produtos");
   return { ok: true };
 }
+
+export async function applyStockCount(
+  items: { product_id: string; counted: number }[]
+): Promise<{ error?: string; adjusted?: number; unchanged?: number }> {
+  const { supabase, orgId } = await requirePermission("estoque");
+  if (!items?.length) return { error: "Nenhum item preenchido." };
+  for (const i of items) {
+    if (!i.product_id || !Number.isFinite(i.counted) || i.counted < 0)
+      return { error: "Quantidades inválidas." };
+  }
+
+  const { data, error } = await supabase.rpc("apply_stock_count", {
+    p_org: orgId,
+    p_items: items,
+  });
+  if (error) return { error: error.message };
+
+  revalidatePath("/app/estoque");
+  revalidatePath("/app/produtos");
+  revalidatePath("/app");
+  const r = data as { adjusted: number; unchanged: number };
+  return { adjusted: r.adjusted, unchanged: r.unchanged };
+}
