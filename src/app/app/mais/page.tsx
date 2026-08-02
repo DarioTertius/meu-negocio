@@ -3,10 +3,12 @@ import { requireOrg } from "@/lib/org";
 import { canAccessRoute } from "@/lib/permissions";
 import { Card } from "@/components/ui";
 import {
-  Boxes, Truck, ShoppingBag, Wallet, ReceiptText, TrendingDown, BarChart3, Settings, Users, UserPlus,
+  Boxes, Truck, ShoppingBag, Wallet, ReceiptText, TrendingDown, BarChart3, Settings, Users, UserPlus, ClipboardList, Package,
 } from "lucide-react";
 
 const links = [
+  { href: "/app/comandas", label: "Comandas", desc: "Mesas e contas abertas", icon: ClipboardList },
+  { href: "/app/produtos", label: "Produtos", desc: "Catálogo, preços e importação", icon: Package },
   { href: "/app/estoque", label: "Estoque", desc: "Entradas, saídas e histórico", icon: Boxes },
   { href: "/app/clientes", label: "Clientes", desc: "Cadastro e histórico de compras", icon: Users },
   { href: "/app/fornecedores", label: "Fornecedores", desc: "Quem abastece seu negócio", icon: Truck },

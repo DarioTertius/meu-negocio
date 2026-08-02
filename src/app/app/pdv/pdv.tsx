@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { Button, Card, Input, Select, EmptyState } from "@/components/ui";
 import { brl, qty, PAYMENT_LABELS } from "@/lib/format";
 import { finalizeSale } from "./actions";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2, ScanBarcode } from "lucide-react";
+import { BarcodeScanner } from "@/components/barcode-scanner";
 
 type Product = { id: string; name: string; sku: string | null; barcode: string | null; unit: string; price: number; stock: number };
 type CartItem = { product: Product; quantity: number };
@@ -26,7 +27,30 @@ export function Pdv({
   const [paymentMethod, setPaymentMethod] = useState("dinheiro");
   const [discount, setDiscount] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const [scanMsg, setScanMsg] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  function addByCode(code: string) {
+    const c = code.trim().toLowerCase();
+    if (!c) return false;
+    const match = products.find(
+      (p) => (p.barcode ?? "").toLowerCase() === c || (p.sku ?? "").toLowerCase() === c
+    );
+    if (match) {
+      const out = tracksStock && match.stock <= 0;
+      if (out) {
+        setScanMsg(`"${match.name}" está sem estoque.`);
+        return true;
+      }
+      addToCart(match);
+      setScanMsg(`Adicionado: ${match.name}`);
+      setSearch("");
+      return true;
+    }
+    setScanMsg(`Nenhum produto com o código ${code}.`);
+    return false;
+  }
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -90,12 +114,30 @@ export function Pdv({
     <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">PDV</h1>
-        <Input
-          autoFocus
-          placeholder="Buscar produto por nome, SKU ou código de barras…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="flex gap-2">
+          <Input
+            autoFocus
+            placeholder="Buscar por nome, SKU ou código — leitor USB funciona aqui"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setScanMsg(null); }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addByCode(search);
+              }
+            }}
+          />
+          <Button variant="outline" onClick={() => setScanning(true)} aria-label="Ler código com a câmera">
+            <ScanBarcode className="h-5 w-5" />
+          </Button>
+        </div>
+        {scanMsg && <p className="text-sm text-slate-600">{scanMsg}</p>}
+        {scanning && (
+          <BarcodeScanner
+            onDetect={(code) => { setScanning(false); addByCode(code); }}
+            onClose={() => setScanning(false)}
+          />
+        )}
         {products.length === 0 ? (
           <EmptyState title="Nenhum produto ativo." hint="Cadastre produtos para vender no PDV." />
         ) : (

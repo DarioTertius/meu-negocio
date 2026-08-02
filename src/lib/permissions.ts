@@ -37,6 +37,7 @@ export const ROUTE_PERMISSIONS: Record<string, Permission | null> = {
   "/app": null,
   "/app/mais": null,
   "/app/pdv": "pdv",
+  "/app/comandas": "pdv",
   "/app/produtos": "produtos:ver",
   "/app/estoque": "estoque",
   "/app/vendas": "vendas",

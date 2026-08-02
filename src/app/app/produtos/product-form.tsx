@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
+import { ScanBarcode } from "lucide-react";
+import { BarcodeScanner } from "@/components/barcode-scanner";
 import { Button, Input, Label, Card } from "@/components/ui";
 import type { ProductState } from "./actions";
 
@@ -29,6 +32,8 @@ export function ProductForm({
   onboarding?: boolean;
 }) {
   const [state, formAction] = useFormState(action, {});
+  const [barcode, setBarcode] = useState(product?.barcode ?? "");
+  const [scanning, setScanning] = useState(false);
   const isEdit = Boolean(product?.id);
 
   return (
@@ -47,7 +52,21 @@ export function ProductForm({
         </div>
         <div>
           <Label htmlFor="barcode">Código de barras</Label>
-          <Input id="barcode" name="barcode" defaultValue={product?.barcode ?? ""} inputMode="numeric" />
+          <div className="flex gap-2">
+            <Input
+              id="barcode" name="barcode" inputMode="numeric"
+              value={barcode} onChange={(e) => setBarcode(e.target.value)}
+            />
+            <Button type="button" variant="outline" onClick={() => setScanning(true)} aria-label="Ler código com a câmera">
+              <ScanBarcode className="h-5 w-5" />
+            </Button>
+          </div>
+          {scanning && (
+            <BarcodeScanner
+              onDetect={(code) => { setBarcode(code); setScanning(false); }}
+              onClose={() => setScanning(false)}
+            />
+          )}
         </div>
         <div>
           <Label htmlFor="unit">Unidade</Label>

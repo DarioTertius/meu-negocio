@@ -5,12 +5,13 @@ import { paletteCss, sanitizeHex } from "@/lib/branding";
 import { signOut } from "@/app/(auth)/actions";
 import {
   LayoutDashboard, Package, Boxes, ShoppingCart, Receipt, Users, LogOut,
-  Truck, ShoppingBag, Wallet, ReceiptText, TrendingDown, BarChart3, Settings, Menu, UserPlus,
+  Truck, ShoppingBag, Wallet, ReceiptText, TrendingDown, BarChart3, Settings, Menu, UserPlus, ClipboardList,
 } from "lucide-react";
 
 const sidebarNav = [
   { href: "/app", label: "Início", icon: LayoutDashboard },
   { href: "/app/pdv", label: "PDV", icon: ShoppingCart },
+  { href: "/app/comandas", label: "Comandas", icon: ClipboardList },
   { href: "/app/produtos", label: "Produtos", icon: Package },
   { href: "/app/estoque", label: "Estoque", icon: Boxes },
   { href: "/app/vendas", label: "Vendas", icon: Receipt },
@@ -28,7 +29,7 @@ const sidebarNav = [
 const bottomNav = [
   { href: "/app", label: "Início", icon: LayoutDashboard },
   { href: "/app/pdv", label: "PDV", icon: ShoppingCart },
-  { href: "/app/produtos", label: "Produtos", icon: Package },
+  { href: "/app/comandas", label: "Comandas", icon: ClipboardList },
   { href: "/app/vendas", label: "Vendas", icon: Receipt },
   { href: "/app/mais", label: "Mais", icon: Menu },
 ];
