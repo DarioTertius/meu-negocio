@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireOrg } from "@/lib/org";
 import { canAccessRoute } from "@/lib/permissions";
 import { Card } from "@/components/ui";
+import { InstallButton } from "@/components/install-button";
 import {
   Boxes, Truck, ShoppingBag, Wallet, ReceiptText, TrendingDown, BarChart3, Settings, Users, UserPlus, ClipboardList, Package,
 } from "lucide-react";
@@ -29,6 +30,7 @@ export default async function MaisPage() {
   return (
     <div className="space-y-5">
       <h1 className="text-2xl font-bold">Mais</h1>
+      <InstallButton />
       <div className="grid gap-3 sm:grid-cols-2">
         {visible.map((l) => (
           <Link key={l.href} href={l.href}>

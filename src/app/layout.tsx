@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   description:
     "Estoque, vendas, caixa, clientes e financeiro em um só lugar. Sistema de gestão simples para pequenos negócios.",
   manifest: "/manifest.json",
+  icons: { apple: "/icons/icon-192.png" },
 };
 
 export const viewport = {
